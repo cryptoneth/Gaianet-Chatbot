@@ -15,8 +15,8 @@ logging.basicConfig(
 )
 
 # Configuration
-BASE_URL = "https://base.gaia.domains"
-MODEL = "qwen2-0.5b-instruct"
+BASE_URL = "https://ionet.gaia.domains"
+MODEL = "Qwen1.5-0.5B-Chat-Q5_K_M"
 MAX_RETRIES = 100  # Essentially infinite retries
 RETRY_DELAY = 5  # Seconds between retries
 QUESTION_DELAY = 1  # Seconds between successful questions
