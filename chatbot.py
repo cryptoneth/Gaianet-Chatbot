@@ -2493,7 +2493,7 @@ def run_bot(api_key: str):
 
 def main():
     print("Title: GaiaAI Chatbot")
-    print("base.gaia.domains")
+    print("")
     api_key = input("Enter your API key: ")
     run_bot(api_key)
 
