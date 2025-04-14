@@ -21,6 +21,7 @@ MAX_RETRIES = 100  # Essentially infinite retries
 RETRY_DELAY = 5  # Seconds between retries
 QUESTION_DELAY = 1  # Seconds between successful questions
 
+
 QUESTIONS = [
 "What is no-code?", 
 "How will AI shape the future of mental health?",
@@ -2426,7 +2427,8 @@ QUESTIONS = [
 "How to manage tasks in no-code apps?"
 ]
 
-def chat_with_ai(api_key: str, question: str) -> str:
+
+def chat_with_ai(api_key: str, question: str, proxy: str = None) -> str:
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}"
@@ -2442,6 +2444,15 @@ def chat_with_ai(api_key: str, question: str) -> str:
         "temperature": 0.7
     }
 
+    # Set up proxies if provided
+    proxies = None
+    if proxy:
+        proxies = {
+            "http": proxy,
+            "https": proxy
+        }
+        logging.info(f"Using proxy: {proxy}")
+
     for attempt in range(MAX_RETRIES):
         try:
             logging.info(f"Attempt {attempt+1} for question: {question[:50]}...")
@@ -2449,7 +2460,8 @@ def chat_with_ai(api_key: str, question: str) -> str:
                 f"{BASE_URL}/v1/chat/completions",
                 headers=headers,
                 json=data,
-                timeout=30
+                timeout=30,
+                proxies=proxies  # Add proxies to the request
             )
 
             if response.status_code == 200:
@@ -2464,7 +2476,7 @@ def chat_with_ai(api_key: str, question: str) -> str:
 
     raise Exception("Max retries exceeded")
 
-def run_bot(api_key: str):
+def run_bot(api_key: str, proxy: str = None):
     while True:  # Outer loop to repeat the questions indefinitely
         random.shuffle(QUESTIONS)
         logging.info(f"Starting chatbot with {len(QUESTIONS)} questions in random order")
@@ -2475,7 +2487,7 @@ def run_bot(api_key: str):
 
             start_time = time.time()
             try:
-                response = chat_with_ai(api_key, question)
+                response = chat_with_ai(api_key, question, proxy)  # Pass proxy to chat_with_ai
                 elapsed = time.time() - start_time
 
                 # Print the entire response
@@ -2495,7 +2507,8 @@ def main():
     print("Title: GaiaAI Chatbot")
     print("")
     api_key = input("Enter your API key: ")
-    run_bot(api_key)
+    proxy = input("Enter your proxy URL (e.g., http://proxy:port, leave empty for no proxy): ")
+    run_bot(api_key, proxy if proxy.strip() else None)  # Pass proxy if provided
 
 if __name__ == "__main__":
     main()
